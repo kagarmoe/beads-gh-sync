@@ -38,10 +38,11 @@ A **single shared Python tool** parameterized by repo→project, invoked by **pe
 Python because Projects v2 requires GraphQL (`gh api graphql`), awkward in shell; reads `bd --json`.
 
 - Tool lives in this repo (`beads-gh-sync`); hooks call a stable absolute path.
-- Config maps repo → GitHub Project:
+- A central **`config.json`** (in this repo) maps each enrolled repo → its GitHub Project:
   - `idle_chapters` → Project #1 (`Idle Chapters Kanban`, `PVT_kwHOAEMkF84BMEZb`)
   - `purseinator-app` → Project #2 (`PurseInator`, `PVT_kwHOAEMkF84BZbyk`)
-- Repos **not** in the config map are no-ops (safety).
+- Repos **not** in `config.json` are no-ops (safety). Repos are added via **Enrollment** (below),
+  not automatically.
 
 ## The link (idempotency backbone)
 
@@ -77,6 +78,19 @@ consistent across machines and shared by both hooks.
   when offline or rate-limited.
 - **One-time reconciliation command:** full pull + full push to union existing items and create all
   links.
+
+## Enrollment (policy-coupled)
+
+Creating a beads instance in a repo does **not** auto-enroll it in sync. Enrollment is coupled to the
+beads-setup policy (global `~/.claude/CLAUDE.md`): when beads is set up in a repo that **has a GitHub
+remote**, offer to enroll it — **confirming each time, never silently**:
+
+1. Ensure a GitHub Project exists (link an existing one, or create a new Project v2).
+2. Add a `config.json` entry (repo → project).
+3. Run the one-time union reconciliation for that repo.
+
+Repos with **no GitHub remote** (local-only/private) are skipped — sync has no target. Enrollment is
+always user-confirmed; it is never a silent side-effect of `bd init`.
 
 ## Error handling & safety
 
