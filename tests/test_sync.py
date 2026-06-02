@@ -14,7 +14,7 @@ class FakeGH:
     def set_single_select(self,*a,**k): pass
 
 def test_push_creates_unlinked_and_updates_linked(tmp_path):
-    issues = [BeadsIssue("chapters-a","A","d","open",2,"task",0),
+    issues = [BeadsIssue("chapters-a","A","d","open",2,"feature",0),
               BeadsIssue("chapters-b","B","d","closed",1,"bug",0)]
     lm = LinkMap.load(tmp_path/"m.json"); lm.link("chapters-b", 7)
     gh = FakeGH()
@@ -22,6 +22,16 @@ def test_push_creates_unlinked_and_updates_linked(tmp_path):
     assert gh.created == ["A"]
     assert 7 in gh.updated
     assert lm.gh_for("chapters-a") == 101
+
+def test_push_skips_task_type_by_default(tmp_path):
+    issues = [BeadsIssue("chapters-feat","F","d","open",1,"feature",0),
+              BeadsIssue("chapters-sub","Task 1: sub","d","open",1,"task",0)]
+    lm = LinkMap.load(tmp_path/"m.json")
+    gh = FakeGH()
+    sync.push(issues, lm, gh, owner="o", repo="r", project_id="P")
+    assert gh.created == ["F"]                  # feature mirrored
+    assert lm.gh_for("chapters-feat") == 101
+    assert lm.gh_for("chapters-sub") is None    # task skipped, not pushed/linked
 
 from beads_gh_sync.github import GhIssue
 

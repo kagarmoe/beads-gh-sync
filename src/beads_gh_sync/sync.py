@@ -3,9 +3,17 @@ from . import mapping
 from .models import BeadsIssue
 from .linkmap import LinkMap
 
-def push(issues: list[BeadsIssue], lm: LinkMap, gh, *, owner, repo, project_id) -> None:
+# Beads issue types NOT mirrored to GitHub by default. `task` covers granular
+# sub-items (e.g. "Task 1: ...") that would clutter the public showcase; beads
+# remains the complete record, GitHub shows the meaningful work items.
+DEFAULT_SKIP_TYPES = frozenset({"task"})
+
+def push(issues: list[BeadsIssue], lm: LinkMap, gh, *, owner, repo, project_id,
+         skip_types: frozenset[str] = DEFAULT_SKIP_TYPES) -> None:
     fopts = gh.project_field_options(project_id)
     for issue in issues:
+        if issue.issue_type in skip_types:
+            continue  # not mirrored (e.g. granular sub-tasks); stays beads-only
         body = mapping.with_marker(issue.description, issue.id)
         labels = [mapping.type_label(issue)]
         number = lm.gh_for(issue.id)

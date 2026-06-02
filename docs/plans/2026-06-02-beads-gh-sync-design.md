@@ -62,6 +62,11 @@ consistent across machines and shared by both hooks.
 | dependencies | **deferred (v1)** — noted in body ("Blocked by: …"), not sub-issues |
 | comments / notes | **deferred (v1)** |
 
+**Push filter:** beads issues of type `task` are **not** mirrored to GitHub by default
+(`DEFAULT_SKIP_TYPES = {"task"}`) — they're granular sub-items that would clutter the public
+showcase. beads stays the complete record; GitHub shows features/bugs/epics. Configurable via
+`push(..., skip_types=...)`. (Pull still imports all GitHub issues into beads.)
+
 **Status → Project Status (kanban column):**
 - `open` → **Backlog**
 - `open` and ready (no open blockers) → **Ready**
