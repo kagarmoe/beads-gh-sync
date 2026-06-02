@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# beads-gh-sync pre-push: mirror beads -> GitHub. Never blocks the push.
+TOOL_DIR="$HOME/repos/beads-gh-sync"
+PYTHONPATH="$TOOL_DIR/src" python3 -m beads_gh_sync.cli push --repo "$(git rev-parse --show-toplevel)" \
+  || echo "[beads-gh-sync] push hook error (ignored)" >&2
+exit 0
