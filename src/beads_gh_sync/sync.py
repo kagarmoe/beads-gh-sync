@@ -26,3 +26,13 @@ def _set(gh, project_id, item, fopts, field, option_name):
     if not f or option_name not in f["options"]:
         return
     gh.set_single_select(project_id, item, f["id"], f["options"][option_name])
+
+def pull(gh_issues, lm: LinkMap, bd, *, repo_path) -> None:
+    """Inbox: import GitHub issues with no link into beads. Beads stays canonical for linked ones."""
+    for gi in gh_issues:
+        if lm.bd_for(gi.number) is not None:
+            continue
+        new_id = bd.create_issue(repo_path, title=gi.title, description=gi.body,
+                                 issue_type="task", priority=2)
+        lm.link(new_id, gi.number)
+    lm.save()

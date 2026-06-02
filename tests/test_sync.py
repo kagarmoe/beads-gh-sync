@@ -22,3 +22,18 @@ def test_push_creates_unlinked_and_updates_linked(tmp_path):
     assert gh.created == ["A"]
     assert 7 in gh.updated
     assert lm.gh_for("chapters-a") == 101
+
+from beads_gh_sync.github import GhIssue
+
+class FakeBeads:
+    def __init__(self): self.created=[]
+    def create_issue(self, path,*,title,description,issue_type,priority):
+        self.created.append(title); return f"chapters-new{len(self.created)}"
+
+def test_pull_imports_only_unlinked_github(tmp_path):
+    gh_issues = [GhIssue(1,"Existing","b",False), GhIssue(2,"Solo idea","b2",False)]
+    lm = LinkMap.load(tmp_path/"m.json"); lm.link("chapters-x", 1)
+    bd = FakeBeads()
+    sync.pull(gh_issues, lm, bd, repo_path="/x")
+    assert bd.created == ["Solo idea"]
+    assert lm.bd_for(2) == "chapters-new1"
