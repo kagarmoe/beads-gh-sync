@@ -37,3 +37,10 @@ def test_pull_imports_only_unlinked_github(tmp_path):
     sync.pull(gh_issues, lm, bd, repo_path="/x")
     assert bd.created == ["Solo idea"]
     assert lm.bd_for(2) == "chapters-new1"
+
+from beads_gh_sync import cli
+def test_cli_noop_unenrolled(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(cli, "CONFIG", tmp_path/"config.json")
+    (tmp_path/"config.json").write_text('{"repos":[]}')
+    assert cli.main(["push", "--repo", str(tmp_path)]) == 0
+    assert "not enrolled" in capsys.readouterr().err

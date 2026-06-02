@@ -36,3 +36,7 @@ def pull(gh_issues, lm: LinkMap, bd, *, repo_path) -> None:
                                  issue_type="task", priority=2)
         lm.link(new_id, gi.number)
     lm.save()
+
+def reconcile(*, repo_path, owner, repo, project_id, lm, bd, gh) -> None:
+    pull(gh.list_issues(owner, repo), lm, bd, repo_path=repo_path)
+    push(bd.list_issues(repo_path), lm, gh, owner=owner, repo=repo, project_id=project_id)
