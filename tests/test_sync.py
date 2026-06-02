@@ -8,6 +8,7 @@ class FakeGH:
     def update_issue(self, o,r,n,*,title,body): self.updated.append(n)
     def set_issue_state(self, o,r,n,*,closed): pass
     def ensure_label(self,o,r,n,label): pass
+    def ensure_label_exists(self,o,r,label): pass
     def issue_node_id(self,o,r,n): return f"NODE{n}"
     def add_issue_to_project(self,p,c): return "ITEM"
     def project_field_options(self,p): return {"Status":{"id":"S","options":{"Ready":"r","In progress":"ip","Done":"d","Backlog":"b"}},"Priority":{"id":"P","options":{"P0":"0","P1":"1","P2":"2"}}}

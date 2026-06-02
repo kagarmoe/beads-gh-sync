@@ -36,6 +36,11 @@ def set_issue_state(owner, repo, number, *, closed: bool) -> None:
 def ensure_label(owner, repo, number, label) -> None:
     _gh(["issue", "edit", str(number), "-R", f"{owner}/{repo}", "--add-label", label])
 
+def ensure_label_exists(owner, repo, label) -> None:
+    # A label must exist in the repo before an issue can reference it.
+    # `gh label create --force` is idempotent (creates or updates).
+    _gh(["label", "create", label, "-R", f"{owner}/{repo}", "--color", "ededed", "--force"])
+
 def _graphql(query: str, **vars) -> dict:
     args = ["api", "graphql", "-f", f"query={query}"]
     for k, v in vars.items():

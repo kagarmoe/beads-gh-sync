@@ -16,6 +16,7 @@ def push(issues: list[BeadsIssue], lm: LinkMap, gh, *, owner, repo, project_id,
             continue  # not mirrored (e.g. granular sub-tasks); stays beads-only
         body = mapping.with_marker(issue.description, issue.id)
         labels = [mapping.type_label(issue)]
+        gh.ensure_label_exists(owner, repo, labels[0])  # label must exist before use
         number = lm.gh_for(issue.id)
         if number is None:
             number = gh.create_issue(owner, repo, title=issue.title, body=body, labels=labels)
